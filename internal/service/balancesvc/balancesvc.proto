@@ -1,0 +1,58 @@
+syntax = "proto3";
+package balancesvc;
+
+message EmptyResponse {
+}
+
+message SingleRequest {
+  int64 uid = 1;
+}
+
+message MultiRequest {
+  repeated int64 uids = 1;
+}
+
+
+message Wallet {
+  int64 uid = 1;
+  int64 balance = 2;
+  int64 freeze_balance = 3;
+}
+
+message GetUserWalletResponse {
+  Wallet wallet = 1;
+}
+
+message MultiGetUsersWalletResponse {
+  map<int64, Wallet> wallet_map = 1;
+}
+
+message TryRequest {
+  string tx_id = 1;
+  int64 uid = 2;
+  int64 amount = 3;
+  string source = 4;
+}
+
+message TxIDRequest {
+  string tx_id = 1;
+}
+
+message TransferRequest {
+  string tx_id = 1;
+  int64 uid = 2;
+  int64 to_uid = 3;
+  int64 amount = 4;
+}
+
+service BalanceSvc {
+  rpc GetUserBalance(SingleRequest) returns (GetUserWalletResponse);
+  rpc MultiGetUsersBalance(MultiRequest) returns (MultiGetUsersWalletResponse);
+  rpc ReduceTry(TryRequest) returns (EmptyResponse);
+  rpc ReduceConfirm(TxIDRequest) returns (EmptyResponse);
+  rpc ReduceCancel(TxIDRequest) returns (EmptyResponse);
+  rpc IncreaseTry(TryRequest) returns (EmptyResponse);
+  rpc IncreaseConfirm(TxIDRequest) returns (EmptyResponse);
+  rpc IncreaseCancel(TxIDRequest) returns (EmptyResponse);
+  rpc Transfer(TransferRequest) returns (EmptyResponse);
+}

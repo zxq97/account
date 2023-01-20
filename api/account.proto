@@ -1,0 +1,110 @@
+syntax = "proto3";
+package api;
+
+// common
+message EmptyResponse {
+}
+
+message SingleRequest {
+  int64 uid = 1;
+}
+
+message MultiRequest {
+  repeated int64 uids = 1;
+}
+
+
+// black
+message BlackRequest {
+  int64 uid = 1;
+  int64 to_uid = 2;
+}
+
+message CheckBlackedRequest {
+  int64 uid = 1;
+  repeated int64 uids = 2;
+}
+
+message CheckBlackedResponse {
+  map<int64, bool> black_map = 1;
+}
+
+
+// wallet
+message WalletInfo {
+  int64 uid = 1;
+  int64 balance = 2;
+  int64 freeze_balance = 3;
+  int64 pay = 4;
+  int64 freeze_pay = 5;
+}
+
+message GetUserWalletResponse {
+  WalletInfo wallet = 1;
+}
+
+message MultiGetUsersWalletResponse {
+  map<int64, WalletInfo> wallet_map = 1;
+}
+
+enum Plat {
+  Undefined = 0;
+  Balance = 1;
+  Pay = 2;
+  Back = 3;
+}
+
+message TradeRequest {
+  string tx_id = 1;
+  int64 uid = 2;
+  int64 amount = 3;
+  Plat from = 4;
+  Plat to = 5;
+}
+
+message MultiTradeRequest {
+  string tx_id = 1;
+  int64 uid = 2;
+  int64 to_uid = 3;
+  int64 amount = 4;
+  Plat plat = 5;
+}
+
+
+// user
+message Userinfo {
+  int64 uid = 1;
+  string name = 2;
+  string profile = 3;
+}
+
+message GetUserResponse {
+  Userinfo user = 1;
+}
+
+message MultiGetUsersResponse {
+  map<int64, Userinfo> user_map = 1;
+}
+
+service Account {
+  // black
+  rpc Black(BlackRequest) returns (EmptyResponse);
+  rpc CancelBlack(BlackRequest) returns (EmptyResponse);
+  rpc CheckBlacked(CheckBlackedRequest) returns (CheckBlackedResponse);
+
+  // wallet
+  rpc GetUserWallet(SingleRequest) returns (GetUserWalletResponse);
+  rpc MultiGetUsersWallet(MultiRequest) returns (MultiGetUsersWalletResponse);
+  rpc Withdrawal(TradeRequest) returns (EmptyResponse); // 提现
+  rpc Store(TradeRequest)returns (EmptyResponse); // 存入
+  rpc Transfer(MultiTradeRequest) returns (EmptyResponse);
+
+  // user
+  rpc GetUser(SingleRequest) returns (GetUserResponse);
+  rpc MultiGetUsers(MultiRequest) returns (MultiGetUsersResponse);
+
+  // member
+
+  // point
+
+}
